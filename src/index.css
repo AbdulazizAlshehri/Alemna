@@ -1,21 +1,33 @@
-/* index.css */
+/* Import “Inter” from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Reset some default browser styles: */
+/* CSS variables for theme colors */
+:root {
+  --color-zain: #80bd38;
+  --color-zain-dark: #6aa82f;
+  --gray-bg: #f8f9fa;
+  --gray-light: #e9ecef;
+  --gray-border: #dee2e6;
+  --gray-text: #495057;
+  --white: #ffffff;
+  --shadow-soft: rgba(0, 0, 0, 0.05);
+}
+
+/* Global resets */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* Use a neutral font on body: */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  background-color: #f2f2f2;
-  color: #333333;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--gray-bg);
+  color: var(--gray-text);
+  line-height: 1.5;
 }
 
-/* Centered container for the form */
+/* Centering container */
 .app-container {
   display: flex;
   align-items: center;
@@ -24,119 +36,241 @@ body {
   padding: 1rem;
 }
 
-/* White card / form wrapper */
+/* Card wrapper */
 .form-card {
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+  background-color: var(--white);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 16px var(--shadow-soft);
+  padding: 2rem;
   width: 100%;
-  max-width: 480px;
+  max-width: 500px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.form-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--shadow-soft);
 }
 
 /* Heading */
 .form-card h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
   text-align: center;
-  color: #222222;
+  color: #212529;
 }
 
-/* Label for inputs/selects */
+/* Labels */
 .form-label {
   display: block;
-  margin-bottom: 0.25rem;
-  font-weight: 600;
-  color: #555555;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #495057;
 }
 
-/* Shared styles for text inputs, selects, file inputs */
-.form-input,
+/* Shared input/select/file styles */
 .form-select,
 .form-file {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #cccccc;
-  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--gray-border);
+  border-radius: 0.5rem;
+  background-color: var(--white);
+  color: var(--gray-text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   margin-bottom: 1rem;
-  font-size: 0.95rem;
-  color: #333333;
 }
-
-.form-input:focus,
 .form-select:focus,
 .form-file:focus {
   outline: none;
-  border-color: #80bd38;
-  box-shadow: 0 0 0 2px rgba(128, 189, 56, 0.25);
+  border-color: var(--color-zain);
+  box-shadow: 0 0 0 3px rgba(128, 189, 56, 0.2);
 }
 
-/* Button styling in Zain green */
-.form-button {
-  display: block;
-  width: 100%;
-  background-color: #80bd38;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 0.6rem;
-  font-size: 1rem;
-  font-weight: 600;
+/* Button base */
+.button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  font-weight: 500;
+  border: none;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
 }
 
-.form-button:hover {
-  background-color: #6aa82f;
+/* Primary (Zain-green) button */
+.button-primary {
+  background-color: var(--color-zain);
+  color: var(--white);
+  padding: 0.7rem 1.2rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  width: 100%;
 }
-
-.form-button:focus {
+.button-primary:hover {
+  background-color: var(--color-zain-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--shadow-soft);
+}
+.button-primary:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(128, 189, 56, 0.45);
+  box-shadow: 0 0 0 3px rgba(128, 189, 56, 0.3);
+}
+
+/* Secondary (smaller) button for “Get Location” */
+.button-secondary {
+  background-color: var(--white);
+  color: var(--color-zain);
+  border: 1px solid var(--color-zain);
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  width: fit-content;
+  margin-bottom: 0.5rem;
+}
+.button-secondary:hover {
+  background-color: var(--color-zain);
+  color: var(--white);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--shadow-soft);
+}
+.button-secondary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(128, 189, 56, 0.3);
+}
+
+/* Location text */
+.location-text {
+  font-size: 0.9rem;
+  color: var(--gray-text);
+  margin-top: 0.25rem;
+}
+
+/* Image preview grid */
+.image-previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+.image-previews img {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid var(--gray-border);
+  box-shadow: 0 2px 6px var(--shadow-soft);
 }
 
 /* Confirmation message */
 .confirmation {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #d1e7dd;
+  border: 1px solid #badbcc;
+  border-radius: 0.5rem;
   text-align: center;
-  color: #155724;
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-  padding: 0.75rem;
-  border-radius: 6px;
+  color: #0f5132;
+  animation: fadeIn 0.3s ease;
 }
-
 .confirmation p {
   margin: 0.25rem 0;
   font-size: 0.95rem;
   font-weight: 500;
 }
 
-/* “Get Location” button smaller styling */
-.location-button {
-  background-color: #80bd38;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-  margin-bottom: 0.5rem;
+/* Simple fadeIn */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.location-button:hover {
-  background-color: #6aa82f;
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .form-card {
+    padding: 1.5rem;
+  }
+  .form-card h2 {
+    font-size: 1.5rem;
+  }
+  .button-primary {
+    padding: 0.6rem 1rem;
+  }
 }
 
-.location-button:focus {
+/* ------------------------------------------------------------------
+   Textarea styling (same look & feel as inputs/selects)
+   ------------------------------------------------------------------ */
+
+.form-textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--gray-border);
+  border-radius: 0.5rem;
+  background-color: var(--white);
+  color: var(--gray-text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  resize: vertical;         /* Allow vertical resizing */
+  min-height: 100px;        /* A reasonable default height */
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.form-textarea:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(128, 189, 56, 0.45);
+  border-color: var(--color-zain);
+  box-shadow: 0 0 0 3px rgba(128, 189, 56, 0.2);
 }
 
-/* Display location text */
-.location-text {
-  font-size: 0.9rem;
-  color: #555555;
-  margin-top: 0.25rem;
+/* ------------------------------------------------------------------
+   Phone input with hard-coded +966 prefix
+   ------------------------------------------------------------------ */
+.phone-input-container {
+  display: flex;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* The prefix (“+966”) */
+.phone-prefix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--gray-light);
+  color: var(--gray-text);
+  font-size: 1rem;
+  border: 1px solid var(--gray-border);
+  border-right: none;               /* remove right border so it merges with input */
+  border-radius: 0.5rem 0 0 0.5rem;  /* round only left corners */
+  padding: 0 0.75rem;
+}
+
+/* The actual 9-digit input */
+.phone-input {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--gray-border);
+  border-radius: 0 0.5rem 0.5rem 0;   /* round only right corners */
+  border-left: none;                 /* merge with prefix */
+  color: var(--gray-text);
+  background-color: var(--white);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.phone-input:focus {
+  outline: none;
+  border-color: var(--color-zain);
+  box-shadow: 0 0 0 3px rgba(128, 189, 56, 0.2);
 }

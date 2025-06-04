@@ -1,146 +1,349 @@
 // src/components/ComplaintForm.js
-import React, { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import React, { useState, useEffect } from 'react';
+
+// Mapping of main categories to their subcategories
+const CATEGORY_OPTIONS = {
+  "Network Issue": [
+    "No 5G/4G Coverage",
+    "Internet Speed/Dysconnectivity",
+    "Gaming Issue",
+    "Streaming Issue",
+  ],
+  "Fiber Issue": [
+    "No Fiber Coverage",
+    "Internet Speed/Dysconnectivity",
+    "Gaming Issue",
+    "Streaming Issue",
+  ],
+  "Call Issue": [
+    "Call Drop/Quality Issue",
+    "Can't Receive or Make Calls",
+    "Can't Activate/Cancel Forward Addons",
+    "Can't Make a Reference Calls",
+    "Other",
+  ],
+  "Roaming Issue": [
+    "Activation/Cancelation",
+    "Other",
+  ],
+  "Website/App Issue": [
+    "Freezing/Logging Issue",
+    "Missing Services",
+    "Payment Issue",
+    "Billing Issue",
+    "Product Missing Information",
+    "Other",
+  ],
+  Shops: [
+    "Agent Behavior/Knowledge",
+    "Shop Closed During Open-hours",
+    "Problem Not Solved",
+    "Too Long Waiting Time",
+    "Broken/Not Appealing Furniture",
+    "Other",
+  ],
+  "Innovative Ideas/Recommendations": [], // No subcategories
+};
 
 export default function ComplaintForm() {
-  const [complaintType, setComplaintType] = useState('');
-  const [networkIssue, setNetworkIssue] = useState('');
+  const [category, setCategory] = useState("");
+  const [subcategory, setSubcategory] = useState("");
+  const [phone, setPhone] = useState("");       // only the 9-digit portion
+  const [details, setDetails] = useState("");
   const [location, setLocation] = useState(null);
   const [images, setImages] = useState([]);
   const [confirmation, setConfirmation] = useState(null);
 
-  // Trigger browser geolocation
-  const handleLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setLocation({
-            latitude: pos.coords.latitude,
-            longitude: pos.coords.longitude,
-          });
-        },
-        (err) => {
-          console.error('Geolocation error:', err);
-          alert('Unable to fetch location. Make sure location services are enabled.');
-        }
-      );
-    } else {
-      alert('Geolocation is not supported by your browser.');
-    }
+  // Generate a short alphanumeric ID (8 characters)
+  const generateShortId = () => {
+    return Math.random().toString(36).substring(2, 10).toUpperCase();
   };
 
-  // Handle up to 3 image files
+  // Fetch the user's current geolocation
+  const handleLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocation({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        });
+      },
+      (err) => {
+        console.error("Geolocation error:", err);
+        alert("Unable to fetch location. Make sure location services are enabled.");
+      }
+    );
+  };
+
+  // Handle up to 3 images and generate previews
   const handleImageUpload = (e) => {
     const fileList = Array.from(e.target.files);
     const firstThree = fileList.slice(0, 3);
-    setImages(firstThree);
+    const withPreviews = firstThree.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setImages(withPreviews);
+  };
+
+  // Cleanup object URLs when images change or component unmounts
+  useEffect(() => {
+    return () => {
+      images.forEach((img) => URL.revokeObjectURL(img.preview));
+    };
+  }, [images]);
+
+  // Handle details textarea with 300-character max
+  const handleDetailsChange = (e) => {
+    const text = e.target.value;
+    if (text.length <= 300) {
+      setDetails(text);
+    } else {
+      setDetails(text.substring(0, 300));
+    }
+  };
+
+  // Handle phone input: only digits, max length 9, must start with '5'
+  const handlePhoneChange = (e) => {
+    let val = e.target.value.replace(/\D/g, "");        // strip non-digits
+    if (val.length === 0) {
+      setPhone("");
+      return;
+    }
+    // Enforce first digit ‘5’
+    if (val.length === 1) {
+      if (val[0] === "5") {
+        setPhone(val);
+      } else {
+        // if first digit isn’t 5, ignore
+        return;
+      }
+    } else {
+      // allow up to 9 digits total
+      if (val.length <= 9 && val[0] === "5") {
+        setPhone(val);
+      } else if (val.length > 9) {
+        setPhone(val.substring(0, 9));
+      }
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Generate a unique complaint ID
-    const complaintID = uuidv4();
+    // Require location before submitting
+    if (!location) {
+      alert("Please capture your current location before submitting.");
+      return;
+    }
+    // Require phone to be exactly 9 digits (all start with ‘5’)
+    if (phone.length !== 9) {
+      alert("Please enter a valid 9-digit Saudi mobile number (starting with 5).");
+      return;
+    }
+
+    // Generate a short, unique complaint ID
+    const shortId = generateShortId();
     setConfirmation({
-      message: 'Complaint submitted successfully!',
-      id: complaintID,
+      message: "Complaint submitted successfully!",
+      id: shortId,
     });
 
-    // (Optional) Here you would send "complaintType", "networkIssue", "location", and "images"
-    // to your backend via fetch or Axios. This is just UI+demo logic.
+    // (Optional) Send { category, subcategory, phone: '+966' + phone, details, location, images[].file } to your backend
 
-    // Reset form fields
-    setComplaintType('');
-    setNetworkIssue('');
+    // Reset the form fields
+    setCategory("");
+    setSubcategory("");
+    setPhone("");
+    setDetails("");
     setLocation(null);
     setImages([]);
   };
+
+  // Copy ID to clipboard
+  const copyToClipboard = () => {
+    if (confirmation && navigator.clipboard) {
+      navigator.clipboard
+        .writeText(confirmation.id)
+        .then(() => {
+          alert("Complaint ID copied to clipboard");
+        })
+        .catch((err) => {
+          console.error("Could not copy text: ", err);
+        });
+    }
+  };
+
+  // Get the subcategories for the currently selected category
+  const subcategories = category ? CATEGORY_OPTIONS[category] : [];
+
+  // Character count in details
+  const charCount = details.length;
 
   return (
     <div className="app-container">
       <form className="form-card" onSubmit={handleSubmit}>
         <h2>Zain Customer Complaint Form</h2>
 
-        {/* Complaint Type */}
-        <label className="form-label" htmlFor="complaintType">
-          Complaint Type
+        {/* Main Category */}
+        <label className="form-label" htmlFor="category">
+          Complaint Category
         </label>
         <select
-          id="complaintType"
+          id="category"
           className="form-select"
-          value={complaintType}
-          onChange={(e) => setComplaintType(e.target.value)}
+          value={category}
+          onChange={(e) => {
+            setCategory(e.target.value);
+            setSubcategory("");
+          }}
           required
         >
-          <option value="">Select Type</option>
-          <option value="Network">Network Complaint</option>
-          <option value="Shop">Shop Complaint</option>
+          <option value="">Select Category</option>
+          {Object.keys(CATEGORY_OPTIONS).map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
         </select>
 
-        {/* Network Sub-Category (only if Network is chosen) */}
-        {complaintType === 'Network' && (
+        {/* Issue Type */}
+        {subcategory !== null && subcategories.length > 0 && (
           <>
-            <label className="form-label" htmlFor="networkIssue">
-              Network Issue
+            <label className="form-label" htmlFor="subcategory">
+              Issue Type
             </label>
             <select
-              id="networkIssue"
+              id="subcategory"
               className="form-select"
-              value={networkIssue}
-              onChange={(e) => setNetworkIssue(e.target.value)}
+              value={subcategory}
+              onChange={(e) => setSubcategory(e.target.value)}
               required
             >
-              <option value="">Select Issue</option>
-              <option value="Internet Connectivity">Internet Connectivity</option>
-              <option value="5G Coverage Issue">5G Coverage Issue</option>
-              <option value="Fiber Issue">Fiber Issue</option>
+              <option value="">Select Issue Type</option>
+              {subcategories.map((sub) => (
+                <option key={sub} value={sub}>
+                  {sub}
+                </option>
+              ))}
             </select>
           </>
         )}
 
-        {/* Location Capture */}
-        <div style={{ marginBottom: '1rem' }}>
+        {/* Contact Phone Number (hard-coded +966 prefix) */}
+        <label className="form-label" htmlFor="phone">
+          Contact Phone Number
+        </label>
+        <div className="phone-input-container">
+          <span className="phone-prefix">+966</span>
+          <input
+            id="phone"
+            type="tel"
+            className="phone-input"
+            value={phone}
+            onChange={handlePhoneChange}
+            placeholder="5XXXXXXXX"
+            required
+          />
+        </div>
+
+        {/* Tell Us More */}
+        <label className="form-label" htmlFor="details">
+          Tell Us More
+        </label>
+        <textarea
+          id="details"
+          className="form-textarea"
+          value={details}
+          onChange={handleDetailsChange}
+          rows="4"
+          placeholder="Describe the issue in detail..."
+          required
+        />
+        <div
+          className="location-text"
+          style={{ textAlign: "right", marginBottom: "1rem" }}
+        >
+          {charCount}/300 characters
+        </div>
+
+        {/* Get Current Location (required) */}
+        <div style={{ marginBottom: "1rem" }}>
           <button
             type="button"
-            className="location-button"
+            className="button-base button-secondary"
             onClick={handleLocation}
           >
-            Get Current Location
+            📍 Get Current Location *
           </button>
           {location && (
             <div className="location-text">
-              Latitude: {location.latitude.toFixed(5)}, Longitude:{' '}
-              {location.longitude.toFixed(5)}
+              Latitude: {location.latitude.toFixed(5)}, Longitude:{" "}
+              {location.longitude.toFixed(5)}{" "}
+              <a
+                href={`https://www.google.com/maps?q=${location.latitude},${location.longitude}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ marginLeft: "0.5rem", color: "var(--color-zain)" }}
+              >
+                View on Google Maps
+              </a>
             </div>
           )}
         </div>
 
-        {/* Image Upload */}
+        {/* Upload up to 3 Photos */}
         <label className="form-label" htmlFor="photos">
           Upload Photos (up to 3)
         </label>
         <input
           id="photos"
-          className="form-file"
           type="file"
           accept="image/*"
           multiple
+          className="form-file"
           onChange={handleImageUpload}
         />
         {images.length > 0 && (
-          <div className="location-text">{images.length} file(s) selected</div>
+          <div className="image-previews">
+            {images.map((imgObj, idx) => (
+              <img key={idx} src={imgObj.preview} alt={`Preview ${idx + 1}`} />
+            ))}
+          </div>
         )}
 
         {/* Submit Button */}
-        <button type="submit" className="form-button">
-          Submit Complaint
+        <button type="submit" className="button-base button-primary">
+          🚀 Submit Complaint
         </button>
 
-        {/* Confirmation Message */}
+        {/* Confirmation Message with Copy Feature */}
         {confirmation && (
           <div className="confirmation">
             <p>{confirmation.message}</p>
-            <p>Complaint ID: {confirmation.id}</p>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.5rem",
+                marginTop: "0.5rem",
+              }}
+            >
+              <span style={{ fontWeight: 600 }}>{confirmation.id}</span>
+              <button
+                type="button"
+                onClick={copyToClipboard}
+                className="button-base button-secondary"
+                style={{ padding: "0.3rem 0.6rem", fontSize: "0.85rem" }}
+              >
+                Copy ID
+              </button>
+            </div>
           </div>
         )}
       </form>
