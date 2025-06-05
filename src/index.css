@@ -214,23 +214,22 @@ body {
 
 .form-textarea {
   width: 100%;
-  padding: 0.6rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--gray-border);
+  padding: 0.75rem 0;
   font-size: 1rem;
-  border: 1px solid var(--gray-border);
-  border-radius: 0.5rem;
-  background-color: var(--white);
+  transition: border-color 0.3s ease;
+  resize: vertical;
+  min-height: 100px;      /* existing */
+  max-height: 200px;      /* new: prevents growing taller than 200px */
+  overflow-y: auto;       /* new: shows scrollbar if content exceeds max-height */
+  margin-bottom: 0;       /* ensure counter sits immediately below */
   color: var(--gray-text);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  resize: vertical;         /* Allow vertical resizing */
-  min-height: 100px;        /* A reasonable default height */
-  margin-bottom: 1rem;
-  line-height: 1.4;
 }
-
 .form-textarea:focus {
   outline: none;
-  border-color: var(--color-zain);
-  box-shadow: 0 0 0 3px rgba(128, 189, 56, 0.2);
+  border-bottom-color: var(--color-zain);
 }
 
 /* ------------------------------------------------------------------
@@ -275,3 +274,24 @@ body {
   box-shadow: 0 0 0 3px rgba(128, 189, 56, 0.2);
 }
 
+@import url('https://unpkg.com/leaflet/dist/leaflet.css');
+
+/* ... (other styles you've already applied above) ... */
+
+/* Make the character count closer to the textarea */
+.char-count {
+  font-size: 0.9rem;
+  color: var(--gray-text);
+  margin: -0.25rem 0 1rem 0; /* negative top margin to overlap textarea */
+  text-align: right;
+}
+
+/* Ensure the Leaflet map container is nicely rounded */
+.leaflet-container {
+  border-radius: 0.75rem;
+}
+
+/* Adjust margins to match other form elements */
+.form-file {
+  margin-bottom: 1rem;
+}
