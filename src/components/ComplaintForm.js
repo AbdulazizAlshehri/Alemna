@@ -119,11 +119,9 @@ export default function ComplaintForm() {
       if (val[0] === "5") {
         setPhone(val);
       } else {
-        // if first digit isn’t 5, ignore
         return;
       }
     } else {
-      // allow up to 9 digits total
       if (val.length <= 9 && val[0] === "5") {
         setPhone(val);
       } else if (val.length > 9) {
@@ -134,7 +132,6 @@ export default function ComplaintForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     // Require location before submitting
     if (!location) {
       alert("Please capture your current location before submitting.");
@@ -187,8 +184,7 @@ export default function ComplaintForm() {
   return (
     <div className="app-container">
       <form className="form-card" onSubmit={handleSubmit}>
-        <h2>Zain Customer Complaint Form</h2>
-
+        <h2>Alemna</h2>
         {/* Main Category */}
         <label className="form-label" htmlFor="category">
           Complaint Category
@@ -282,8 +278,8 @@ export default function ComplaintForm() {
           </button>
           {location && (
             <div className="location-text">
-              Latitude: {location.latitude.toFixed(5)}, Longitude:{" "}
-              {location.longitude.toFixed(5)}{" "}
+              Latitude: {location.latitude.toFixed(5)}, Longitude: {" "}
+              {location.longitude.toFixed(5)} {" "}
               <a
                 href={`https://www.google.com/maps?q=${location.latitude},${location.longitude}`}
                 target="_blank"
